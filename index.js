@@ -12,43 +12,64 @@ app.use(express.static('public'));
 app.use(bodyParser.json());
 
 var neutronPorts = [
-	{ id: "1c7811dc-e0b1-4d1e-9089-c203df328157", mac_address: "fa:16:3e:47:47:00", fixed_ips: [{"subnet_id": "50d00739-172c-4ca5-9c0d-79478b27bc9f", "ip_address": "12.12.12.2"},]},
-	{ id: "38aa2be8-dec7-49b3-94e6-805bb23c30fd", mac_address: "fa:16:3e:a0:25:f2", fixed_ips: [{"subnet_id": "fcd1456f-15dd-4e0b-9821-8036858a117c", "ip_address": "10.10.10.4"}]},
-	{ id: "3b842df8-e92a-4d53-b394-fc575d8d37e5", mac_address: "fa:16:3e:5d:02:57", fixed_ips: [{"subnet_id": "61ae89f8-5297-4d5a-96fa-c6c3e2a1fa74", "ip_address": "10.12.0.3"}]},
-	{ id: "3cac74fd-f24d-4b40-8344-1a86af85113e", mac_address: "fa:16:3e:bb:a4:ca", fixed_ips: [{"subnet_id": "fcd1456f-15dd-4e0b-9821-8036858a117c", "ip_address": "10.10.10.1"}]},
-	{ id: "78058861-9079-4b9e-925f-81f4a0ac3e27", mac_address: "fa:16:3e:62:b4:f2", fixed_ips: [{"subnet_id": "fcd1456f-15dd-4e0b-9821-8036858a117c", "ip_address": "10.10.10.7"}]},
-	{ id: "7fc1733c-f8d3-47cf-b755-0b08374a0e55", mac_address: "fa:16:3e:bb:1f:e0", fixed_ips: [{"subnet_id": "50d00739-172c-4ca5-9c0d-79478b27bc9f", "ip_address": "12.12.12.4"}]},
-	{ id: "8075c307-4df9-4421-b65b-b2d871f83f56", mac_address: "fa:16:3e:3d:36:b6", fixed_ips: [{"subnet_id": "fcd1456f-15dd-4e0b-9821-8036858a117c", "ip_address": "10.10.10.3"}]},
-	{ id: "87b30d9c-e895-42c0-8ea1-09c5087c2207", mac_address: "fa:16:3e:79:75:3f", fixed_ips: [{"subnet_id": "61ae89f8-5297-4d5a-96fa-c6c3e2a1fa74", "ip_address": "10.12.0.2"}]},
-	{ id: "96ccf08f-6aa1-4b88-b853-4dfd46853a22", mac_address: "fa:16:3e:e1:2c:58", fixed_ips: [{"subnet_id": "50d00739-172c-4ca5-9c0d-79478b27bc9f", "ip_address": "12.12.12.5"}]}
+	{ id: "1", mac_address: "fa:16:3e:47:47:00", fixed_ips: [{"subnet_id": "50d00739-172c-4ca5-9c0d-79478b27bc9f", "ip_address": "12.12.12.2"},]},
+	{ id: "2", mac_address: "fa:16:3e:a0:25:f2", fixed_ips: [{"subnet_id": "fcd1456f-15dd-4e0b-9821-8036858a117c", "ip_address": "10.10.10.4"}]},
+	{ id: "3", mac_address: "fa:16:3e:5d:02:57", fixed_ips: [{"subnet_id": "61ae89f8-5297-4d5a-96fa-c6c3e2a1fa74", "ip_address": "10.12.0.3"}]},
+	{ id: "4", mac_address: "fa:16:3e:bb:a4:ca", fixed_ips: [{"subnet_id": "fcd1456f-15dd-4e0b-9821-8036858a117c", "ip_address": "10.10.10.1"}]},
+	{ id: "5", mac_address: "fa:16:3e:62:b4:f2", fixed_ips: [{"subnet_id": "fcd1456f-15dd-4e0b-9821-8036858a117c", "ip_address": "10.10.10.7"}]},
+	{ id: "6", mac_address: "fa:16:3e:bb:1f:e0", fixed_ips: [{"subnet_id": "50d00739-172c-4ca5-9c0d-79478b27bc9f", "ip_address": "12.12.12.4"}]},
+	{ id: "7", mac_address: "fa:16:3e:3d:36:b6", fixed_ips: [{"subnet_id": "fcd1456f-15dd-4e0b-9821-8036858a117c", "ip_address": "10.10.10.3"}]},
+	{ id: "8", mac_address: "fa:16:3e:79:75:3f", fixed_ips: [{"subnet_id": "61ae89f8-5297-4d5a-96fa-c6c3e2a1fa74", "ip_address": "10.12.0.2"}]},
 ];
+
+var neutronPortId = 8;
 
 var serviceChains = [
-	{ id: "1c7811dc-e0b1-4d1e-9089-c203df328157a", vnf_list: "test",},
-	{ id: "1c7811dc-e0b1-4d1e-9089-c203df328157b", vnf_list: "test",},
-	{ id: "1c7811dc-e0b1-4d1e-9089-c203df328157c", vnf_list: "test",},
-	{ id: "1c7811dc-e0b1-4d1e-9089-c203df328157d", vnf_list: "test",},
-	{ id: "1c7811dc-e0b1-4d1e-9089-c203df328157e", vnf_list: "test",},
-	{ id: "1c7811dc-e0b1-4d1e-9089-c203df328157f", vnf_list: "test",},
-	{ id: "1c7811dc-e0b1-4d1e-9089-c203df328157g", vnf_list: "test",},
-	{ id: "1c7811dc-e0b1-4d1e-9089-c203df328157h", vnf_list: "test",}
+	{ id: "1", vnf_list: "test",},
+	{ id: "2", vnf_list: "test",},
+	{ id: "3", vnf_list: "test",},
+	{ id: "4", vnf_list: "test",},
+	{ id: "5", vnf_list: "test",},
+	{ id: "6", vnf_list: "test",},
+	{ id: "7", vnf_list: "test",},
+	{ id: "8", vnf_list: "test",}
 ];
 
+var serviceChainId = 8;
+
 var virNetFuns = [
-	{ id: "1c7811dc-e0b1-4d1e-9089-c203df328157a", ingress_port: "1c7811dc-e0b1-4d1e-9089-c203df328157a", egress_port: "1c7811dc-e0b1-4d1e-9089-c203df328157a", name: "1c7811dc-e0b1-4d1e-9089-c203df328157a", description: "1c7811dc-e0b1-4d1e-9089-c203df328157a"},
-	{ id: "1c7811dc-e0b1-4d1e-9089-c203df328157b", ingress_port: "1c7811dc-e0b1-4d1e-9089-c203df328157a", egress_port: "1c7811dc-e0b1-4d1e-9089-c203df328157a", name: "1c7811dc-e0b1-4d1e-9089-c203df328157a", description: "1c7811dc-e0b1-4d1e-9089-c203df328157a"},
-	{ id: "1c7811dc-e0b1-4d1e-9089-c203df328157c", ingress_port: "1c7811dc-e0b1-4d1e-9089-c203df328157a", egress_port: "1c7811dc-e0b1-4d1e-9089-c203df328157a", name: "1c7811dc-e0b1-4d1e-9089-c203df328157a", description: "1c7811dc-e0b1-4d1e-9089-c203df328157a"},
-	{ id: "1c7811dc-e0b1-4d1e-9089-c203df328157d", ingress_port: "1c7811dc-e0b1-4d1e-9089-c203df328157a", egress_port: "1c7811dc-e0b1-4d1e-9089-c203df328157a", name: "1c7811dc-e0b1-4d1e-9089-c203df328157a", description: "1c7811dc-e0b1-4d1e-9089-c203df328157a"},
-	{ id: "1c7811dc-e0b1-4d1e-9089-c203df328157e", ingress_port: "1c7811dc-e0b1-4d1e-9089-c203df328157a", egress_port: "1c7811dc-e0b1-4d1e-9089-c203df328157a", name: "1c7811dc-e0b1-4d1e-9089-c203df328157a", description: "1c7811dc-e0b1-4d1e-9089-c203df328157a"},
-	{ id: "1c7811dc-e0b1-4d1e-9089-c203df328157f", ingress_port: "1c7811dc-e0b1-4d1e-9089-c203df328157a", egress_port: "1c7811dc-e0b1-4d1e-9089-c203df328157a", name: "1c7811dc-e0b1-4d1e-9089-c203df328157a", description: "1c7811dc-e0b1-4d1e-9089-c203df328157a"},
-	{ id: "1c7811dc-e0b1-4d1e-9089-c203df328157g", ingress_port: "1c7811dc-e0b1-4d1e-9089-c203df328157a", egress_port: "1c7811dc-e0b1-4d1e-9089-c203df328157a", name: "1c7811dc-e0b1-4d1e-9089-c203df328157a", description: "1c7811dc-e0b1-4d1e-9089-c203df328157a"},
-	{ id: "1c7811dc-e0b1-4d1e-9089-c203df328157h", ingress_port: "1c7811dc-e0b1-4d1e-9089-c203df328157a", egress_port: "1c7811dc-e0b1-4d1e-9089-c203df328157a", name: "1c7811dc-e0b1-4d1e-9089-c203df328157a", description: "1c7811dc-e0b1-4d1e-9089-c203df328157a"}
+	{ id: "1", ingress_port: "ingress_port1", egress_port: "egress_port1", name: "test1", description: "description1"},
+	{ id: "2", ingress_port: "ingress_port2", egress_port: "egress_port2", name: "test2", description: "description2"},
+	{ id: "3", ingress_port: "ingress_port3", egress_port: "egress_port3", name: "test3", description: "description3"},
+	{ id: "4", ingress_port: "ingress_port4", egress_port: "egress_port4", name: "test4", description: "description4"},
+	{ id: "5", ingress_port: "ingress_port5", egress_port: "egress_port5", name: "test5", description: "description5"},
+	{ id: "6", ingress_port: "ingress_port6", egress_port: "egress_port6", name: "test6", description: "description6"},
+	{ id: "7", ingress_port: "ingress_port7", egress_port: "egress_port7", name: "test7", description: "description7"},
+	{ id: "8", ingress_port: "ingress_port8", egress_port: "egress_port8", name: "test8", description: "description8"}
 ];
+
+var virNetFunId = 8;
+
 //routing funktionen
 app.get("/api/service-chain", function(req, res){
 	console.log("GET /api/service-chain/");
 	res.status(200).send({ serviceChains: serviceChains });
 });
+
+app.post("/api/service-chain", function(req, res){
+	console.log("POST /api/service-chain/", req.body);
+	virNetFunId = virNetFunId + 1;
+	serviceChains.push({ id: serviceChainId.toString(), vnf_list: req.body.input['vir-net-funs'], });
+	res.status(200).send({ virNetFuns: virNetFuns });
+});
+
+app.post("/api/vir-net-fun", function(req, res){
+	console.log("POST /api/vir-net-fun/", req.body);
+	virNetFunId = virNetFunId + 1;
+	virNetFuns.push({ id: virNetFunId.toString(), ingress_port: req.body.input['neutron-ports'], egress_port: req.body.input['neutron-ports'], name_port: req.body.input['neutron-ports'], description_port: req.body.input['neutron-ports'], });
+	res.status(200).send({ virNetFuns: virNetFuns });
+});
+
 //get methode für das verbiden der Applikation mit der API
 app.get("/api/vir-net-fun", function(req, res){
 	console.log("GET /api/vir-net-fun/");

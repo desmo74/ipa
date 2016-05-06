@@ -118,7 +118,7 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 			url: settings.virNetFun,
 		});
 	};
-
+	//Anpassungen 
 	this.deleteServiceChain = function(id) {
 		return $http({
 			method: 'DELETE',
@@ -191,9 +191,20 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 	$scope.deleteSelected = function() {
 		_.each(_.filter($scope.serviceChains, function(serviceChain) {
 			return serviceChain.selected === true;
-		}), function(serviceChain) {
+		}), function(serviceChain){
 			netfloc.deleteServiceChain(serviceChain.id).then(function() {
 				$scope.serviceChains = _.filter($scope.serviceChains, function(sc) {
+					//Zeigt dem user, ob die Service Chain korrekt gelöscht wurde.
+					if(sc.id !== serviceChain.id){
+						$scope.showMessage = true;
+					  $scope.alertClass = "alert-success";
+					  $scope.alertTitle = "Success"; $scope.alertMessage = "Selected ServiceChains have been Deleted";
+					}
+					else{
+						$scope.showMessage = true;
+					  $scope.alertClass = "alert-danger";
+					  $scope.alertTitle = "Error"; $scope.alertMessage = "Something went wrong";
+					}
 					return sc.id !== serviceChain.id;
 				});
 			});
@@ -229,12 +240,24 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 	};
 
 	$scope.maxChainOrderIsValid = function(nr) {
+		console.log("blabla", nr);
 		return nr >= 2 && nr % 1 == 0;
 	};
 
 	$scope.maxChainOrderNr = 0;
 	$scope.applyMaxChainOrder = function() {
-		clearVirNetFuns();
+		clearVirNetFuns()
+		//Message für den User, ob das auswählen der Nummer funktioniert hat oder nicht
+		if($scope.maxChainOrderNr >= 2){
+			$scope.showMessage1 = true;
+			$scope.alertClass1 = "alert-success";
+			$scope.alertTitle1 = "Success"; $scope.alertMessage1 = "Your apply number is correct";
+		}
+		else{
+			$scope.showMessage1 = true;
+			$scope.alertClass1 = "alert-danger";
+			$scope.alertTitle1 = "Error"; $scope.alertMessage1 = "Your apply number is not correct";
+		}
 		$scope.maxChainOrder = Array.apply(null, {length: $scope.maxChainOrderNr+1}).map(Number.call, Number);
 		console.log("apply maxChainOrder", $scope.maxChainOrder);
 	};
@@ -249,7 +272,8 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 		console.log("serviceChainString:", serviceChainString);
 		netfloc.createServiceChain(serviceChainString)
 			.then(function(data) {
-				$scope.fetchNeutronPorts();
+				console.log("then");
+				$scope.fetchServiceChains();
 				console.log(data);
 				$scope.showMessage = true;
 			  $scope.alertClass = "alert-success";
@@ -304,11 +328,23 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 	$scope.fetchVirNetFuns();
 
 	$scope.deleteSelected = function() {
+		console.log("deleteselected");
 		_.each(_.filter($scope.virNetFuns, function(virNetFun) {
+			console.log("selected", virNetFun.selected);
 			return virNetFun.selected === true;
 		}), function(virNetFun) {
 			netfloc.deleteVirNetFun(virNetFun.id).then(function() {
 				$scope.virNetFuns = _.filter($scope.virNetFuns, function(vnf) {
+					if(vnf.id !== virNetFun.id){
+						$scope.showMessage = true;
+					  $scope.alertClass = "alert-success";
+					  $scope.alertTitle = "Success"; $scope.alertMessage = "Selected VNFs have been Deleted";
+					}
+					else{
+						$scope.showMessage = true;
+					  $scope.alertClass = "alert-danger";
+					  $scope.alertTitle = "Error"; $scope.alertMessage = "Something went wrong";
+					}
 					return vnf.id !== virNetFun.id;
 				});
 			});
@@ -319,11 +355,12 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 		$scope.virNetFuns = _.map($scope.virNetFuns, function(virNetFun){
 			virNetFun.selected = $scope.selectAll;
 			return virNetFun;
-		});
-	};th#filteroder{
-    width: 1200px;
-}
-og(port);
+		})
+	};
+
+	var clearNeutronPorts = function() {
+		$scope.virNetFuns = _.map($scope.virNetFuns, function(port) {
+			console.log(port);
 			port.selectedOrder = 0;
 			return port;
 		});
@@ -390,9 +427,6 @@ og(port);
 	};
 
 })
-
-
-
 .controller('ServicesController', function() {
 	console.log("ServicesController");
 })

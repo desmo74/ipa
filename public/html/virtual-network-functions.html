@@ -97,17 +97,17 @@
       <th>description</th>
 
     </tr>
-    <tr ng-repeat="virNetFuns in virNetFuns">
+    <tr ng-repeat="virNetFun in virNetFuns">
       <td>
           <form action="">
           <input id="checkboxes" type="checkbox" ng-model="virNetFun.selected">
           </form>
       </td>
-      <td class="colorId">{{ virNetFuns.id }}</td>
-      <td class="colorId">{{ virNetFuns.ingress_port }}</td>
-      <td class="colorId">{{ virNetFuns.egress_port }}</td>
-      <td class="colorId">{{ virNetFuns.name }}</td>
-      <td class="colorId">{{ virNetFuns.description }}</td>
+      <td class="colorId">{{ virNetFun.id }}</td>
+      <td class="colorId">{{ virNetFun.ingress_port }}</td>
+      <td class="colorId">{{ virNetFun.egress_port }}</td>
+      <td class="colorId">{{ virNetFun.name }}</td>
+      <td class="colorId">{{ virNetFun.description }}</td>
     </tr>
   </tbody>
 </table>

@@ -11,6 +11,12 @@
                     <div class="col-md-4">
                       <form>
                         <div class="form-group">
+                          <div ng-show="showMessage1" class="alert {{ alertClass }}">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                            <strong>{{ alertTitle1 }}</strong> {{ alertMessage1 }}
+                          </div>
                           <label>
                             Number of VNFs
                             <input type="number" class="form-control" ng-model="maxChainOrderNr">
