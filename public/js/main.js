@@ -7,6 +7,11 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 		controller:'HomeController',
 		templateUrl:'html/home.html',
 	})
+	//new route provider for Help Page
+	.when('/helppage', {
+		controller: 'HelpPageController',
+		templateUrl: 'html/helppage.html',
+	})
 	.when('/services', {
 		controller:'ServicesController',
 		templateUrl:'html/services.html',
@@ -15,6 +20,7 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 		controller:'ServiceFunctionChainingController',
 		templateUrl:'html/service-function-chaining.html',
 	})
+	//new route provider for VNFs
 	.when('/virtual-network-functions', {
 		controller:'VirtualNetworkFunctionController',
 		templateUrl:'html/virtual-network-functions.html',
@@ -78,9 +84,8 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 		return this;
 	};
 
-	//liste von VNF ids als commaseperated string
+	//liste of VNF ids as commaseperated string
 	this.createServiceChain = function(virNetFuns) {
-		//Weiterleitung des requests zu Service Chain
 		return $http({
 			method: 'POST',
 			url: settings.serviceChain,
@@ -105,6 +110,7 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 			});
 		};
 
+	//adjustments for GET request
 	this.getServiceChains = function() {
 		return $http({
 			method: 'GET',
@@ -112,13 +118,15 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 		});
 	};
 
+	//adjustments for GET request
 	this.getVirNetFuns = function() {
 		return $http({
 			method: 'GET',
 			url: settings.virNetFun,
 		});
 	};
-	//Anpassungen 
+
+	//adjustments for DELETE request
 	this.deleteServiceChain = function(id) {
 		return $http({
 			method: 'DELETE',
@@ -126,6 +134,7 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 		});
 	};
 
+	//adjustments for DELETE request
 	this.deleteVirNetFun = function(id) {
 		return $http({
 			method: 'DELETE',
@@ -133,6 +142,7 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 		});
 	};
 
+	//adjustments for GET request
 	this.getNeutronPorts = function() {
 		return $http({
 			method: "GET",
@@ -145,13 +155,14 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 	$scope.main={};
 	$scope.main.hasnavigation = true;
 	$scope.menu=[
-	{href:"#/topology" , label:"Topology" },
 	{href:"#/logs" , label:"Logs" }
 	];
+	//add VNF to navigation
 	$scope.menuService = {label:"Service" , menu: [{href:"#/service-function-chaining" , label:"Service Function Chaining"} , {href:"#/virtual-network-functions" , label:"Virtual Network Functions" }, {href:"#/chainpattern" , label:"Chain Pattern" }]};
 	$scope.menuConnection = {label:"Connection" , menu: [{href:"#/networkpath" , label:"Network Path" } , {href:"#/flowpatterns" , label:"Flow Pattern" }] };
 	$scope.menuBridges = {label:"Bridges" , menu: [{href:"#/subbridges" , label:"Bridges" } , {href:"#/bridgepattern" , label:"Bridge Pattern" }]};
-	$scope.menuTopology = {};
+	//add helppage to navigation
+	$scope.menuHelppage = {label:"Helppage" , menu: [{href:"#/helppage" , label:"Help Page" }]};
 	$scope.menuLogs = {};
 	console.log("MainController");
 })
@@ -165,6 +176,7 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 	console.log("ServiceFunctionChainingController");
 	$scope.introductionservicefunctionchaining="The function Service Function Chaining allows to get the number of Neutron Ports needed.";
 
+	//changed names for new setting
 	$scope.fetchVirNetFuns = function() {
 		netfloc.getVirNetFuns().then(function( virNetFuns){
 			console.log("vir-net-funs",  virNetFuns,  virNetFuns.data. virNetFuns);
@@ -177,6 +189,8 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 			});
 		});
 	};
+
+	//changed names for new setting
 	$scope.fetchVirNetFuns();
 	$scope.fetchServiceChains = function() {
 		netfloc.getServiceChains().then(function(serviceChains){
@@ -188,13 +202,14 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 	};
 	$scope.fetchServiceChains();
 
+	//changed names for new setting
 	$scope.deleteSelected = function() {
 		_.each(_.filter($scope.serviceChains, function(serviceChain) {
 			return serviceChain.selected === true;
 		}), function(serviceChain){
 			netfloc.deleteServiceChain(serviceChain.id).then(function() {
 				$scope.serviceChains = _.filter($scope.serviceChains, function(sc) {
-					//Zeigt dem user, ob die Service Chain korrekt gelöscht wurde.
+					//added alertMessage
 					if(sc.id !== serviceChain.id){
 						$scope.showMessage = true;
 					  $scope.alertClass = "alert-success";
@@ -211,12 +226,15 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 		});
 	};
 
+	//changed names for new setting
 	$scope.toggleSelect = function(){
 		$scope.serviceChains = _.map($scope.serviceChains, function(serviceChain){
 			serviceChain.selected = $scope.selectAll;
 			return serviceChain;
 		});
 	};
+
+	//changed names for new setting
 	var clearVirNetFuns = function() {
 		$scope.virNetFuns = _.map($scope.virNetFuns, function(port) {
 			console.log(port);
@@ -225,6 +243,7 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 		});
 	};
 
+	//changed names for new setting
 	$scope.getServiceChain = function(ports) {
 		return  _.map(_.sortBy(_.filter(ports, function(port){
 			return port.selectedOrder != 0;
@@ -233,21 +252,24 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 		});
 	};
 
+	//changed names for new setting
 	$scope.chainIsValid = function(ports, maxChainOrder) {
 		return $scope.getServiceChain(ports).length >= 2
 		&& maxChainOrder.length == 1
 		&& maxChainOrder[0] == 0;
 	};
 
+	//changed names for new setting
 	$scope.maxChainOrderIsValid = function(nr) {
 		console.log("blabla", nr);
 		return nr >= 2 && nr % 1 == 0;
 	};
 
+	//changed names for new setting
 	$scope.maxChainOrderNr = 0;
 	$scope.applyMaxChainOrder = function() {
 		clearVirNetFuns()
-		//Message für den User, ob das auswählen der Nummer funktioniert hat oder nicht
+		//added alertMessage
 		if($scope.maxChainOrderNr >= 2){
 			$scope.showMessage1 = true;
 			$scope.alertClass1 = "alert-success";
@@ -262,6 +284,7 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 		console.log("apply maxChainOrder", $scope.maxChainOrder);
 	};
 
+	//changed names for new setting
 	$scope.maxChainOrder = [null];
 	$scope.createServiceChain = function(ports) {
 		if (!$scope.chainIsValid(ports, $scope.maxChainOrder)) {
@@ -270,6 +293,7 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 		}
 		var serviceChainString = $scope.getServiceChain(ports).join(",");
 		console.log("serviceChainString:", serviceChainString);
+		//added alertMessage
 		netfloc.createServiceChain(serviceChainString)
 			.then(function(data) {
 				console.log("then");
@@ -286,6 +310,8 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 				console.error(err);
 			});
 	};
+
+	//changed names for new setting
 	$scope.selectOrder = function(port, order) {
 		if(port.selectedOrder !== 0){
 			$scope.maxChainOrder.push(port.selectedOrder);
@@ -294,10 +320,11 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 		$scope.maxChainOrder = _.filter($scope.maxChainOrder, function(chainOrder) {
 			return chainOrder !== order || chainOrder === 0;
 		});
-		// sortieren reihenfolge
 		console.log("select order for port", order, port);
 	};
 })
+
+//added new controller for VNFs
 .controller('VirtualNetworkFunctionController', function($scope, netfloc) {
 	console.log("VirtualNetworkFunctionController");
 
@@ -316,6 +343,7 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 			});
 		});
 	};
+
 	$scope.fetchNeutronPorts();
 	$scope.fetchVirNetFuns = function() {
 		netfloc.getVirNetFuns().then(function(virNetFuns){
@@ -374,22 +402,11 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 		});
 	};
 
-	$scope.vnfIsValid = function(ports, maxVnfOrder) {
-		return $scope.getVirNetFun(ports).length >= 2
-		&& maxVnfOrder.length == 1
-		&& maxVnfOrder[0] == 0;
-	};
-
-	$scope.maxVnfOrderIsValid = function(nr) {
-		return nr >= 2 && nr % 1 == 0;
-	};
-
-	$scope.maxVnfOrderNr = 0;
-	$scope.applymaxVnfOrder = function() {
-		clearNeutronPorts();
-		$scope.maxVnfOrder = Array.apply(null, {length: $scope.maxVnfOrderNr+1}).map(Number.call, Number);
-		console.log("apply maxVnfOrder", $scope.maxVnfOrder);
-	};
+		$scope.maxVnfOrderNr = [null];
+		$scope.applymaxVnfOrder = function() {
+			clearNeutronPorts();
+			$scope.maxVnfOrder = Array.apply(null, {length: $scope.maxVnfOrderNr+1}).map(Number.call, Number);
+		};
 
 	$scope.maxVnfOrder = [null];
 	$scope.createVirNetFun = function(ports) {
@@ -414,6 +431,7 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 				console.error(err);
 			});
 	};
+
 	$scope.selectOrder = function(port, order) {
 		if(port.selectedOrder !== 0){
 			$scope.maxVnfOrder.push(port.selectedOrder);
@@ -424,6 +442,21 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 		});
 		// sortieren reihenfolge
 		console.log("select order for port", order, port);
+	};
+
+	$scope.addVnf= function(){
+		$scope.vnfName = []
+    $scope.vnfName.push($scope.virNetFuns)
+	};
+
+	$scope.repeatSelect = function($scope){
+		$scope.data = {
+			repeatSelect: null,
+			availableOptions: [
+				{id: '1', port: 'ingress_port'},
+        {id: '2', port: 'egress_port'},
+			],
+		};
 	};
 
 })
@@ -470,4 +503,9 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 })
 .controller('LogsController', function() {
 	console.log("LogsController");
+})
+//new controller for Helppage
+.controller('HelpPageController', function($scope) {
+	$scope.main.hasnavigation = true;
+	console.log("HomeController");
 })

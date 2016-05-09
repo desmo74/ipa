@@ -11,6 +11,7 @@ var _ = require("underscore"),
 app.use(express.static('public'));
 app.use(bodyParser.json());
 
+//mocked data for neutronPorts
 var neutronPorts = [
 	{ id: "1", mac_address: "fa:16:3e:47:47:00", fixed_ips: [{"subnet_id": "50d00739-172c-4ca5-9c0d-79478b27bc9f", "ip_address": "12.12.12.2"},]},
 	{ id: "2", mac_address: "fa:16:3e:a0:25:f2", fixed_ips: [{"subnet_id": "fcd1456f-15dd-4e0b-9821-8036858a117c", "ip_address": "10.10.10.4"}]},
@@ -24,6 +25,7 @@ var neutronPorts = [
 
 var neutronPortId = 8;
 
+//mocked data for SCs
 var serviceChains = [
 	{ id: "1", vnf_list: "test",},
 	{ id: "2", vnf_list: "test",},
@@ -37,6 +39,7 @@ var serviceChains = [
 
 var serviceChainId = 8;
 
+//mocked data for VNFs
 var virNetFuns = [
 	{ id: "1", ingress_port: "ingress_port1", egress_port: "egress_port1", name: "test1", description: "description1"},
 	{ id: "2", ingress_port: "ingress_port2", egress_port: "egress_port2", name: "test2", description: "description2"},
@@ -56,6 +59,7 @@ app.get("/api/service-chain", function(req, res){
 	res.status(200).send({ serviceChains: serviceChains });
 });
 
+//new post function for the service chain
 app.post("/api/service-chain", function(req, res){
 	console.log("POST /api/service-chain/", req.body);
 	virNetFunId = virNetFunId + 1;
@@ -63,6 +67,7 @@ app.post("/api/service-chain", function(req, res){
 	res.status(200).send({ virNetFuns: virNetFuns });
 });
 
+//new post function for the virtual network function
 app.post("/api/vir-net-fun", function(req, res){
 	console.log("POST /api/vir-net-fun/", req.body);
 	virNetFunId = virNetFunId + 1;
@@ -70,12 +75,13 @@ app.post("/api/vir-net-fun", function(req, res){
 	res.status(200).send({ virNetFuns: virNetFuns });
 });
 
-//get methode für das verbiden der Applikation mit der API
+//new get function for receiving the vnfs
 app.get("/api/vir-net-fun", function(req, res){
 	console.log("GET /api/vir-net-fun/");
 	res.status(200).send({ virNetFuns: virNetFuns });
 });
 
+//new get function for receiving the sfcs
 app.get("/api/service-chain/:id", function(req, res) {
 	console.log("GET /api/service-chain/" + req.params.id);
 	res.status(200).send(_.find(serviceChains, function(serviceChain) {
@@ -91,6 +97,7 @@ app.get("/api/vir-net-fun/:id", function(req, res) {
 	}));
 });
 
+// new delete function for the sfc
 app.delete("/api/service-chain/:id", function(req, res) {
 	console.log("DELETE /api/service-chain/" + req.params.id);
 	serviceChains = _.filter(serviceChains, function(serviceChain) {
@@ -99,6 +106,7 @@ app.delete("/api/service-chain/:id", function(req, res) {
 	res.status(200).send();
 });
 
+//new delete function for the vnf
 app.delete("/api/vir-net-fun/:id", function(req, res) {
 	console.log("DELETE /api/vir-net-fun/" + req.params.id);
 	virNetFuns = _.filter(virNetFuns, function(virNetFun) {
