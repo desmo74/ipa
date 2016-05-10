@@ -98,14 +98,12 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 	};
 
 	//Liste von  ids als comma separated string
-	this.createVirNetFun = function(neutronPorts) {
+	this.createVirNetFun = function(vnf) {
 			return $http({
 				method: 'POST',
 				url: settings.virNetFun,
 				data: {
-					"input": {
-						"neutron-ports": neutronPorts
-					}
+					"input": vnf
 				}
 			});
 		};
@@ -402,33 +400,57 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 		});
 	};
 
-		$scope.maxVnfOrderNr = [null];
-		$scope.applymaxVnfOrder = function() {
-			clearNeutronPorts();
-			$scope.maxVnfOrder = Array.apply(null, {length: $scope.maxVnfOrderNr+1}).map(Number.call, Number);
-		};
+	$scope.vnfIsValid = function() {
+		return true;
+	};
 
-	$scope.maxVnfOrder = [null];
-	$scope.createVirNetFun = function(ports) {
-		if (!$scope.vnfIsValid(ports, $scope.maxVnfOrder)) {
+	$scope.createVirNetFun = function() {
+		if (!$scope.vnfIsValid()) {
 			console.log("chain is not valid.");
 			return;
 		}
-		var virNetFunString = $scope.getVirNetFun(ports).join(",");
-		console.log("virNetFunString:", virNetFunString);
-		netfloc.createVirNetFun(virNetFunString)
-			.then(function(data) {
+
+		// read scope variables
+		var ingress_port = _.find($scope.neutronPorts, function(port) {
+			return port.portSelect == "ingress_port";
+		});
+		var egress_port = _.find($scope.neutronPorts, function(port) {
+			return port.portSelect == "egress_port";
+		});
+		var name = $scope.vnfName;
+		var desc = $scope.vnfDescription;
+
+		// reset scope variables
+		$scope.vnfName = "";
+		$scope.vnfDescription = "";
+
+		console.log("name", name);
+		console.log("description", desc);
+		console.log("ingress_port", ingress_port);
+		console.log("egress_port", egress_port);
+
+		netfloc.createVirNetFun({
+			name: name,
+			description: desc,
+			ingress_port: ingress_port.id,
+			egress_port: egress_port.id
+		}).then(function(data) {
 				$scope.fetchNeutronPorts();
 				console.log(data);
+
+				// check if data.virNetFuns field is there
+				// if not, don't update list and give message to user
+				// that the VNF list could not get loaded
+				$scope.virNetFuns = data.data.virNetFuns;
 				$scope.showMessage = true;
-			  $scope.alertClass = "alert-success";
-			  $scope.alertTitle = "Success"; $scope.alertMessage = "Your Chain has been successfully created";
+				$scope.alertClass = "alert-success";
+				$scope.alertTitle = "Success"; $scope.alertMessage = "Your VNF has been successfully created";
 			})
 			.catch(function(err) {
-				$scope.showMessage = true;
-			  $scope.alertClass = "alert-danger";
-			  $scope.alertTitle = "Error"; $scope.alertMessage = "Something went wrong";
 				console.error(err);
+				$scope.showMessage = true;
+				$scope.alertClass = "alert-danger";
+				$scope.alertTitle = "Error"; $scope.alertMessage = "Something went wrong";
 			});
 	};
 
@@ -446,7 +468,7 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 
 	$scope.addVnf= function(){
 		$scope.vnfName = []
-    $scope.vnfName.push($scope.virNetFuns)
+    	$scope.vnfName.push($scope.virNetFuns);
 	};
 
 	$scope.repeatSelect = function($scope){
@@ -454,7 +476,7 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 			repeatSelect: null,
 			availableOptions: [
 				{id: '1', port: 'ingress_port'},
-        {id: '2', port: 'egress_port'},
+        		{id: '2', port: 'egress_port'},
 			],
 		};
 	};

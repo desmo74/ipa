@@ -1,10 +1,11 @@
 <div class="container">
   <div class="modal fade" id="myModal" role="dialog">
     <div class="modal-dialog modal-lg">
-      <div class="modal-content">
+      <div class="modal-content" style="width: 950px;">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal">&times;</button>
-            <h4 class="modal-title">Virtual Network Functions</h4>
+            <h1 class="modal-title">Virtual Network Functions</h1>
+            <p>Here you can create a Virtual Network Functions by choosing a name and the Description as well as the ingress and egress port.</p>
         </div>
         <div class="modal-body">
           <div class="row">
@@ -13,7 +14,6 @@
                 <div class="main">
                   <h4>Enter Name</h4>
                   <input ng-model="vnfName" type="text" name="input" placeholder="Enter name here">
-                  <button class="btn btn-primary" ng-click="addVnf()">Add</button>
                   <ul>
                     <li ng-repeat="name in names">
                       {{ name }}
@@ -23,7 +23,6 @@
                 <div class="main">
                   <h4>Enter Description</h4>
                     <input ng-model="vnfDescription" type="text" name="input" placeholder="Enter description here">
-                    <button class="btn btn-primary" ng-click="addVnf()">Add</button>
                     <ul>
                       <li ng-repeat="description in descriptions">
                         {{ description }}
@@ -36,12 +35,12 @@
           <table class="table">
             <tbody>
               <tr>
-                <th>Filter by port: <br><input ng-model="search.selectedOrder"></th>
+                <th>Filter by port: <br><input style="width: 134px;" ng-model="search.selectedOrder"></th>
                 <th>Filter by id: <br><input ng-model="search.id"></th>
                 <th>Filter by fixed_ips: <br><input ng-model="search.fixed_ips"></th>
                 <th>Filter by mac_address: <br><input ng-model="search.mac_address"></th>
               </tr>
-                <th>order</th>
+                <th>port</th>
                 <th>id</th>
                 <th>fixed_ips</th>
                 <th>mac_address</th>
@@ -49,11 +48,11 @@
               <tr ng-repeat="port in neutronPorts | filter:search">
                 <td>
                     <form name="myForm">
-                      <label for="repeatSelect"></label>
-                      <select name="repeatSelect" id="repeatSelect" ng-model="data.repeatSelect">
+                      <label for="portSelect"></label>
+                      <select name="portSelect" id="portSelect" ng-model="port.portSelect">
                         <option value="">Please select</option>
-                        <option value="{{data.option}}">Ingress Port</option>
-                        <option value="{{data.option}}">Egress Port</option>
+                        <option value="ingress_port">Ingress Port</option>
+                        <option value="egress_port">Egress Port</option>
                       </select>
                     </form>
                 </td>
@@ -65,12 +64,14 @@
           </table>
         </div>
         <div class="modal-footer">
-          <button class="btn btn-primary" ng-disabled="!vnfIsValid(neutronPorts, maxVnfOrder)" ng-click="createVirNetFun(vnfPorts)" data-dismiss="modal">Create VNF</button>
+          <button class="btn btn-primary" ng-disabled="!vnfIsValid()" ng-click="createVirNetFun()" data-dismiss="modal">Create VNF</button>
         </div>
       </div>
     </div>
   </div>
 </div>
+<h1 class="title">Virtual Network Functions</h1>
+<p>here is a list of all the created Virtual Network Functionss. You can Delete them or create a new one with the buttons create and delete.</p>
 <div ng-show="showMessage" class="alert {{ alertClass }}">
   <button type="button" class="close" data-dismiss="alert" aria-label="Close">
     <span aria-hidden="true">&times;</span>
