@@ -439,7 +439,7 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 				console.log(data);
 
 				// check if data.virNetFuns field is there
-				// if not, don't update list and give message to user
+				// if not don't update list and give message to user
 				// that the VNF list could not get loaded
 				$scope.virNetFuns = data.data.virNetFuns;
 				$scope.showMessage = true;
