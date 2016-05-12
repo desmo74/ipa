@@ -64,6 +64,7 @@ app.post("/api/service-chain", function(req, res){
 	console.log("POST /api/service-chain/", req.body);
 	virNetFunId = virNetFunId + 1;
 	serviceChains.push({ id: serviceChainId.toString(), vnf_list: req.body.input['vir-net-funs'], });
+
 	res.status(200).send({ virNetFuns: virNetFuns });
 });
 
@@ -71,7 +72,7 @@ app.post("/api/service-chain", function(req, res){
 app.post("/api/vir-net-fun", function(req, res){
 	console.log("POST /api/vir-net-fun/", req.body);
 	virNetFunId = virNetFunId + 1;
-	virNetFuns.push({ id: virNetFunId.toString(), ingress_port: req.body.input['neutron-ports'], egress_port: req.body.input['neutron-ports'], name_port: req.body.input['neutron-ports'], description_port: req.body.input['neutron-ports'], });
+	virNetFuns.push({ id: virNetFunId.toString(), ingress_port: req.body.input['ingress_port'], egress_port: req.body.input['egress_port'], name: req.body.input['name'], description: req.body.input['description'], });
 	res.status(200).send({ virNetFuns: virNetFuns });
 });
 

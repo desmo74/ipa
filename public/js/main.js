@@ -429,6 +429,7 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 		console.log("ingress_port", ingress_port);
 		console.log("egress_port", egress_port);
 
+		//here the VNF gets createt using the name, description, and ports
 		netfloc.createVirNetFun({
 			name: name,
 			description: desc,
