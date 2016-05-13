@@ -188,6 +188,12 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 		});
 	};
 
+	//called when new modal opens
+	$scope.clearSFCForm = function() {
+		$scope.maxChainOrderNr = 0;
+		$scope.fetchVirNetFuns();
+	};
+
 	//changed names for new setting
 	$scope.fetchVirNetFuns();
 	$scope.fetchServiceChains = function() {
@@ -259,7 +265,7 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 
 	//changed names for new setting
 	$scope.maxChainOrderIsValid = function(nr) {
-		console.log("blabla", nr);
+		console.log("nr", nr);
 		return nr >= 2 && nr % 1 == 0;
 	};
 
@@ -326,11 +332,12 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 .controller('VirtualNetworkFunctionController', function($scope, netfloc) {
 	console.log("VirtualNetworkFunctionController");
 
+	//get neutronPorts from server and prepare for view
 	$scope.fetchNeutronPorts = function() {
 		netfloc.getNeutronPorts().then(function(ports){
 			console.log("neutron-ports", ports, ports.data.ports);
 			$scope.neutronPorts = _.map(ports.data.ports, function(port) {
-				port.selectedOrder = 0;
+				port.portSelect = "Select port";
 				port.dropDownToggled = function(open) {
 					console.log("toggled", this, open);
 				};
@@ -342,7 +349,10 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 		});
 	};
 
+	//inital fetch
 	$scope.fetchNeutronPorts();
+
+	//get vnfs from server and prepare for view
 	$scope.fetchVirNetFuns = function() {
 		netfloc.getVirNetFuns().then(function(virNetFuns){
 			$scope.virNetFuns = _.map(virNetFuns.data.virNetFuns, function(virNetFun){
@@ -351,8 +361,37 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 			});
 		});
 	};
-	$scope.fetchVirNetFuns();
 
+	//initial fetch
+	$scope.fetchVirNetFuns();
+	var selectablePorts = ["Select port", "ingress_port", "egress_port"];
+	$scope.selectablePorts = selectablePorts.slice();
+
+	//gets called when modal opens
+	$scope.clearVNFForm = function() {
+		$scope.vnfName = "";
+		$scope.vnfDescription = "";
+		$scope.fetchNeutronPorts();
+		$scope.selectablePorts = selectablePorts.slice();
+	};
+
+	//gets called when port is selected in dropdown
+	$scope.selectPort = function(port, selectedPort){
+		console.log("selectPort", port, selectedPort);
+		if(port.portSelect != "Select port"){
+			$scope.selectablePorts.push(port.portSelect);
+			if($scope.selectablePorts.indexOf("ingress_port") === 2){
+				$scope.selectablePorts = selectablePorts.slice();
+			}
+		}
+		port.portSelect = selectedPort;
+		var portIndex = $scope.selectablePorts.indexOf(selectedPort);
+		if (portIndex > 0) {
+    	$scope.selectablePorts.splice(portIndex, 1);
+		}
+	};
+
+	//all selected vnf are getting deleted
 	$scope.deleteSelected = function() {
 		console.log("deleteselected");
 		_.each(_.filter($scope.virNetFuns, function(virNetFun) {
@@ -377,6 +416,7 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 		});
 	};
 
+	//select or deselect all list items
 	$scope.toggleSelect = function(){
 		$scope.virNetFuns = _.map($scope.virNetFuns, function(virNetFun){
 			virNetFun.selected = $scope.selectAll;
@@ -384,6 +424,7 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 		})
 	};
 
+	//reset selected order to zero for all neutronPorts in the list
 	var clearNeutronPorts = function() {
 		$scope.virNetFuns = _.map($scope.virNetFuns, function(port) {
 			console.log(port);
@@ -392,50 +433,43 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 		});
 	};
 
-	$scope.getVirNetFun = function(ports) {
-		return  _.map(_.sortBy(_.filter(ports, function(port){
-			return port.selectedOrder != 0;
-		}), 'selectedOrder'), function(port){
-			return port.id;
-		});
+	//enables button to create vnf
+	$scope.vnfIsValid = function(selectablePorts, vnfName, vnfDescription) {
+		return selectablePorts.length == 1 && vnfName != "" && vnfDescription != "";
 	};
 
-	$scope.vnfIsValid = function() {
-		return true;
+	//create a vnf object from scope variables
+	var getVNF = function() {
+		return {
+			ingress_port: _.find($scope.neutronPorts, function(port) {
+				return port.portSelect == "ingress_port";
+			}).id,
+			egress_port: _.find($scope.neutronPorts, function(port) {
+				return port.portSelect == "egress_port";
+			}).id,
+			name: $scope.vnfName,
+			desc: $scope.vnfDescription
+		};
 	};
 
+	//gets called when create button is pressed
 	$scope.createVirNetFun = function() {
-		if (!$scope.vnfIsValid()) {
-			console.log("chain is not valid.");
-			return;
-		}
 
 		// read scope variables
-		var ingress_port = _.find($scope.neutronPorts, function(port) {
-			return port.portSelect == "ingress_port";
-		});
-		var egress_port = _.find($scope.neutronPorts, function(port) {
-			return port.portSelect == "egress_port";
-		});
-		var name = $scope.vnfName;
-		var desc = $scope.vnfDescription;
+		var vnf = getVNF();;
+
 
 		// reset scope variables
 		$scope.vnfName = "";
 		$scope.vnfDescription = "";
 
-		console.log("name", name);
-		console.log("description", desc);
-		console.log("ingress_port", ingress_port);
-		console.log("egress_port", egress_port);
+		console.log("name", vnf.name);
+		console.log("description", vnf.desc);
+		console.log("ingress_port", vnf.ingress_port);
+		console.log("egress_port", vnf.egress_port);
 
 		//here the VNF gets createt using the name, description, and ports
-		netfloc.createVirNetFun({
-			name: name,
-			description: desc,
-			ingress_port: ingress_port.id,
-			egress_port: egress_port.id
-		}).then(function(data) {
+		netfloc.createVirNetFun(vnf).then(function(data) {
 				$scope.fetchNeutronPorts();
 				console.log(data);
 
@@ -454,34 +488,6 @@ angular.module('app', ['ui.bootstrap', 'ngRoute'])
 				$scope.alertTitle = "Error"; $scope.alertMessage = "Something went wrong";
 			});
 	};
-
-	$scope.selectOrder = function(port, order) {
-		if(port.selectedOrder !== 0){
-			$scope.maxVnfOrder.push(port.selectedOrder);
-		}
-		port.selectedOrder = order;
-		$scope.maxVnfOrder = _.filter($scope.maxVnfOrder, function(vnfOrder) {
-			return vnfOrder !== order || vnfOrder === 0;
-		});
-		// sortieren reihenfolge
-		console.log("select order for port", order, port);
-	};
-
-	$scope.addVnf= function(){
-		$scope.vnfName = []
-    	$scope.vnfName.push($scope.virNetFuns);
-	};
-
-	$scope.repeatSelect = function($scope){
-		$scope.data = {
-			repeatSelect: null,
-			availableOptions: [
-				{id: '1', port: 'ingress_port'},
-        		{id: '2', port: 'egress_port'},
-			],
-		};
-	};
-
 })
 .controller('ServicesController', function() {
 	console.log("ServicesController");
